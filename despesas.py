@@ -1,37 +1,34 @@
-from db import get_db
+import db
+from schemas import DespesaIn
+
 
 def listar():
-    conn = get_db()
-    cursor = conn.cursor(dictionary=True) 
+    conn = db.get_db()
     
     sql = '''
-        SELECT id," \
-         " nome," \
-         " valor, " \
-         "descricao," \
-         " data_pagamento," \
-         " data_criacao FROM despesas'''
-    cursor.execute(sql)
-    
-    resultados = cursor.fetchall()
-    
-    cursor.close()
-    conn.close()
-    return resultados
+        SELECT id, nome, valor, descricao, data_pagamento, data_criacao
+        FROM despesas
+    '''
 
-def cadastrar(nome, valor, descricao, data_pagamento):
-    conn = get_db()
-    cursor = conn.cursor()
-    
-    sql = """
-        INSERT INTO despesas (nome, valor, descricao, data_pagamento) 
-        VALUES (%s, %s, %s, %s)
-    """
-    valores = (nome, valor, descricao, data_pagamento)
-    
-    cursor.execute(sql, valores)
-    conn.commit() # Importante: Sem o commit, os dados não são salvos no MySQL!
-    
-    cursor.close()
+    with conn.cursor(dictionary=True) as cursor:
+        cursor.execute(sql)
+        dados = cursor.fetchall()
+
     conn.close()
-    print("Despesa cadastrada com sucesso!")
+    return dados
+
+
+def cadastrar(despesa: DespesaIn):
+    conn = db.get_db()
+
+    sql = '''
+        INSERT INTO despesas (nome, valor, descricao, data_pagamento)
+        VALUES (%s, %s, %s, %s)
+    '''
+
+    with conn.cursor(dictionary=True) as cursor:
+        args = (despesa.nome, despesa.valor, despesa.descricao, despesa.data_pagamento)
+        cursor.execute(sql, args)
+
+    conn.commit()
+    conn.close()

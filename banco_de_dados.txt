@@ -1,0 +1,14 @@
+CREATE DATABASE gerenciador_financeiro;
+
+USE gerenciador_financeiro;
+
+CREATE TABLE despesas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    descricao TEXT,
+    data_pagamento DATE,
+    data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+SELECT * FROM despesas;
